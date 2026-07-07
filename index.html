@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>THE MECHANISM — v1.0.0</title>
+<title>THE MECHANISM — v1.1.0</title>
 <style>
 :root{
   --brass:#b08d3f; --brass-hi:#e8c877; --brass-lo:#6e5522;
@@ -88,19 +88,26 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 .hudBtn{background:linear-gradient(#2a2f36,#171a1f);border:1px solid #3a3f47;color:#aeb3ba;border-radius:6px;
   width:38px;height:34px;font-size:15px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);}
 .hudBtn:active{transform:translateY(1px);}
-#ver{position:fixed;right:16px;bottom:12px;font-size:11px;letter-spacing:.18em;color:#585d66;pointer-events:none;}
+#ver{position:fixed;left:16px;bottom:30px;font-size:11px;letter-spacing:.18em;color:#585d66;pointer-events:none;}
 #cpTag{position:fixed;left:16px;bottom:12px;font-size:11px;letter-spacing:.14em;color:#585d66;pointer-events:none;}
-.arrow{position:fixed;pointer-events:auto;width:52px;height:52px;border-radius:50%;cursor:pointer;
-  background:radial-gradient(circle at 35% 30%, #4a4f57, #23262b 60%, #101216);
-  border:1px solid #565c66;color:#d9bd72;font-size:20px;line-height:1;
-  box-shadow:0 6px 16px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.1);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
-.arrow small{font-size:9px;letter-spacing:.1em;color:#9aa0a8;}
-.arrow:active{transform:scale(.94);}
-#aL{left:26px;top:50%;transform:translateY(-50%);}
-#aR{right:26px;top:50%;transform:translateY(-50%);}
-#aU{left:50%;top:64px;transform:translateX(-50%);}
-#aD{left:50%;bottom:22px;transform:translateX(-50%);}
+#dpad{position:fixed;right:16px;bottom:16px;z-index:210;pointer-events:auto;
+  display:grid;grid-template-areas:'. u .' 'l c r' '. d .';grid-auto-columns:60px;grid-auto-rows:60px;gap:7px;}
+#dpad .dcenter{grid-area:c;border-radius:50%;margin:10px;
+  background:radial-gradient(circle at 35% 28%, #6b5a34, #33291a 65%, #16110a);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.08);}
+.arrow{pointer-events:auto;width:60px;height:60px;border-radius:12px;cursor:pointer;
+  background:radial-gradient(circle at 35% 28%, #caa551, #8a6d3b 55%, #4d3c17);
+  border:1px solid #2e2410;color:#241c08;font-size:22px;line-height:1;
+  box-shadow:0 5px 14px rgba(0,0,0,.65), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -3px 6px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  text-shadow:0 1px 0 rgba(255,255,255,.25);}
+.arrow small{font-size:10px;letter-spacing:.1em;color:#3d3012;font-weight:bold;}
+.arrow:active{transform:translateY(2px);box-shadow:0 2px 6px rgba(0,0,0,.65), inset 0 2px 0 rgba(255,255,255,.3);}
+#aU{grid-area:u;} #aD{grid-area:d;} #aL{grid-area:l;} #aR{grid-area:r;}
+.arrow.hint{box-shadow:0 0 0 2px var(--hintHue,#fff), 0 0 20px 4px var(--hintHue,#fff), inset 0 2px 0 rgba(255,255,255,.35);
+  animation:hintPulse 1.4s infinite ease-in-out;}
+@keyframes hintPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+#flash{position:fixed;inset:0;z-index:250;pointer-events:none;opacity:0;transition:opacity .55s ease;}
 @keyframes shudder{0%,100%{transform:translate(-50%,-50%) scale(var(--s,1))}20%{transform:translate(calc(-50% - 7px),-50%) scale(var(--s,1))}40%{transform:translate(calc(-50% + 6px),calc(-50% + 3px)) scale(var(--s,1))}60%{transform:translate(calc(-50% - 4px),calc(-50% - 3px)) scale(var(--s,1))}80%{transform:translate(calc(-50% + 3px),-50%) scale(var(--s,1))}}
 #stage.shudder{animation:shudder .45s ease;}
 
@@ -288,28 +295,33 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
     <button class="hudBtn" id="sndBtn" title="Sound">♪</button>
     <button class="hudBtn" id="rstBtn" title="Hold to reset everything">⟲</button>
   </div>
-  <button class="arrow" id="aU">▲<small></small></button>
-  <button class="arrow" id="aD">▼<small></small></button>
-  <button class="arrow" id="aL">◀<small></small></button>
-  <button class="arrow" id="aR">▶<small></small></button>
-  <div id="ver" class="mono">v1.0.0</div>
+  <div id="dpad">
+    <button class="arrow" id="aU">▲<small></small></button>
+    <button class="arrow" id="aL">◀<small></small></button>
+    <div class="dcenter"></div>
+    <button class="arrow" id="aR">▶<small></small></button>
+    <button class="arrow" id="aD">▼<small></small></button>
+  </div>
+  <div id="ver" class="mono">v1.1.0</div>
   <div id="cpTag" class="disp"></div>
 </div>
 
 <div id="toast"></div>
+<div id="flash"></div>
 
 <div id="intro">
   <h1 class="disp">THE MECHANISM</h1>
   <p>Three lights. Lose them all and the box forgets — back to its last remembrance.<br>
   Dials, rings and switches may be explored freely. Levers, bells and seals are <b>armed</b>: commit with care.<br>
-  The box will tell you where to look next, if you learn its language of colour.</p>
+  One puzzle is awake at a time — on any of the six sides. When a jewel seats itself,
+  <b>follow the glowing arrow</b> to where the next one stirs.</p>
   <button class="go disp" id="beginBtn">PLACE HANDS UPON IT</button>
 </div>
 
 <div id="winOv">
   <h1 class="disp">THE MECHANISM YIELDS</h1>
   <p id="winStats"></p>
-  <p style="color:#6e6a58;font-size:12px;">v1.0.0</p>
+  <p style="color:#6e6a58;font-size:12px;">v1.1.0</p>
 </div>
 
 <div id="portrait">
@@ -321,7 +333,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <script>
 /*ENGINE-START*/
 const ENGINE = (() => {
-  const VERSION = '1.0.0';
+  const VERSION = '1.1.0';
   const STORE_KEY = 'mechanism_v1';
   // Puzzle chain: strictly ordered, interleaved across sides.
   const PUZZLES = [
@@ -461,16 +473,44 @@ function beep(freq, dur, type, vol){
     o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime + (dur||.08) + .02);
   }catch(e){}
 }
+function slide(f1, f2, dur, type, vol){
+  if (!state.sound) return;
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type||'sine';
+    o.frequency.setValueAtTime(f1, AC.currentTime);
+    o.frequency.exponentialRampToValueAtTime(Math.max(20,f2), AC.currentTime + dur);
+    g.gain.setValueAtTime(vol||.1, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime + dur);
+    o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime + dur + .03);
+  }catch(e){}
+}
 const snd = {
-  tick: () => beep(1400,.03,'square',.03),
-  clack:() => beep(220,.06,'square',.06),
-  turn: () => { beep(140,.18,'triangle',.07); setTimeout(()=>beep(90,.12,'triangle',.06),120); },
-  good: () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.16,'triangle',.06), i*90)); },
-  bad:  () => { beep(160,.22,'sawtooth',.08); setTimeout(()=>beep(110,.3,'sawtooth',.08),140); },
-  doom: () => { [220,180,140,90].forEach((f,i)=>setTimeout(()=>beep(f,.3,'sawtooth',.09), i*160)); },
-  win:  () => { [523,659,784,1047,1319,1568].forEach((f,i)=>setTimeout(()=>beep(f,.4,'triangle',.07), i*140)); },
+  tick: () => beep(1400,.03,'square',.05),
+  clack:() => beep(220,.06,'square',.09),
+  turn: () => { beep(140,.18,'triangle',.1); setTimeout(()=>beep(90,.12,'triangle',.09),120); },
+  good: () => { [523,659,784,1047,1568].forEach((f,i)=>setTimeout(()=>beep(f,.2,'triangle',.13), i*75));
+                setTimeout(()=>slide(1047,2093,.3,'sine',.09), 400); },
+  bad:  () => { slide(220,85,.4,'sawtooth',.17); setTimeout(()=>beep(60,.3,'sine',.2),120); },
+  doom: () => { slide(180,38,1.0,'sawtooth',.2); setTimeout(()=>beep(50,.5,'sine',.22),300); },
+  win:  () => { [523,659,784,1047,784,1047,1319,1568,2093].forEach((f,i)=>setTimeout(()=>beep(f,.45,'triangle',.14), i*130));
+                setTimeout(()=>slide(1568,3136,.6,'sine',.1), 1200); },
 };
+/* unlock audio on first touch (iOS) */
+addEventListener('pointerdown', function unlockAC(){
+  try{ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); AC.resume(); }catch(e){}
+  removeEventListener('pointerdown', unlockAC);
+}, {once:false});
 
+/* ---------- flash ---------- */
+function flash(color){
+  const el = $('#flash');
+  el.style.background = `radial-gradient(ellipse at 50% 50%, transparent 42%, ${color} 100%)`;
+  el.style.transition = 'none'; el.style.opacity = 1;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.transition = 'opacity .55s ease'; el.style.opacity = 0; }));
+}
 /* ---------- toast ---------- */
 let toastT = null;
 function toast(msg, ms){
@@ -514,8 +554,22 @@ function bake(){ box.style.transform = ENGINE.toMatrix3d(R); }
 bake();
 function updateArrowHints(){
   const map = { aU:'up', aD:'down', aL:'left', aR:'right' };
+  const cur = ENGINE.currentPuzzle(state);
+  const target = cur ? cur.side : null;
+  const front = ENGINE.frontFace(R);
+  const col = cur ? `hsl(${ENGINE.HUE(state.solved)},85%,55%)` : null;
+  let any = false;
   for (const [id,dir] of Object.entries(map)){
-    $('#'+id).querySelector('small').textContent = ENGINE.frontFace(ENGINE.applyTurn(R, dir));
+    const el = $('#'+id);
+    const dest = ENGINE.frontFace(ENGINE.applyTurn(R, dir));
+    el.querySelector('small').textContent = dest;
+    el.classList.remove('hint'); el.style.removeProperty('--hintHue');
+    if (target && target !== front && dest === target){
+      el.classList.add('hint'); el.style.setProperty('--hintHue', col); any = true;
+    }
+  }
+  if (target && target !== front && !any){ /* opposite face: either way round works */
+    ['aL','aR'].forEach(id => { const el = $('#'+id); el.classList.add('hint'); el.style.setProperty('--hintHue', col); });
   }
 }
 function turn(dir){
@@ -567,6 +621,7 @@ function refreshFaceStates(){
   });
   renderVaultGems();
   renderCandles();
+  if (typeof updateArrowHints === 'function') updateArrowHints();
 }
 function armTrim(el, idx){ el.style.setProperty('--hue', HUES(idx)); el.classList.add('armedGlow'); }
 function commit(id, value){
@@ -575,20 +630,22 @@ function commit(id, value){
   state = res.state; saveState(); renderLives();
   if (res.status === 'solved' || res.status === 'win'){
     snd.good();
+    flash(`hsla(${res.hue},85%,55%,.32)`);
     if (!state.started){ state.started = Date.now(); saveState(); }
-    if (res.checkpoint){ setTimeout(()=>toast('A seal is pressed. The box will remember this much.'), 1400); snd.tick(); }
+    if (res.status === 'solved') toast('A jewel seats itself. Something wakes on another side\u2026');
+    if (res.checkpoint){ setTimeout(()=>toast('A seal is pressed. The box will remember this much.'), 1700); snd.tick(); }
     refreshFaceStates();
     if (res.status === 'win'){ setTimeout(winSequence, 1200); }
     return true;
   }
   if (res.status === 'miss'){
-    snd.bad();
+    snd.bad(); flash('rgba(200,55,45,.4)');
     $('#stage').classList.remove('shudder'); void $('#stage').offsetWidth; $('#stage').classList.add('shudder');
     toast(['The mechanism resists.','A light gutters out.','It does not want that.'][3 - state.lives - 1] || 'The mechanism resists.');
     return false;
   }
   if (res.status === 'reset'){
-    snd.doom();
+    snd.doom(); flash('rgba(200,55,45,.55)');
     $('#stage').classList.remove('shudder'); void $('#stage').offsetWidth; $('#stage').classList.add('shudder');
     toast(state.checkpoint > 0 ? 'Darkness. The box recalls only its sealed remembrance.' : 'Darkness. The box forgets everything.', 3600);
     setTimeout(() => { resetControlPositions(); refreshFaceStates(); }, 500);
