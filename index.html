@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>THE MECHANISM — v1.3.0</title>
+<title>THE MECHANISM — v1.4.0</title>
 <style>
 :root{
   --brass:#b08d3f; --brass-hi:#e8c877; --brass-lo:#6e5522;
@@ -299,7 +299,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
   <button class="arrow" id="aL">◀<small></small></button>
   <button class="arrow" id="aR">▶<small></small></button>
   <button class="arrow" id="aZ">↻<small>90°</small></button>
-  <div id="ver" class="mono">v1.3.0</div>
+  <div id="ver" class="mono">v1.4.0</div>
   <div id="cpTag" class="disp"></div>
 </div>
 
@@ -318,7 +318,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <div id="winOv">
   <h1 class="disp">THE MECHANISM YIELDS</h1>
   <p id="winStats"></p>
-  <p style="color:#6e6a58;font-size:12px;">v1.3.0</p>
+  <p style="color:#6e6a58;font-size:12px;">v1.4.0</p>
 </div>
 
 <div id="portrait">
@@ -330,7 +330,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <script>
 /*ENGINE-START*/
 const ENGINE = (() => {
-  const VERSION = '1.3.0';
+  const VERSION = '1.4.0';
   const STORE_KEY = 'mechanism_v1';
   // Puzzle chain: strictly ordered, interleaved across sides.
   const PUZZLES = [
@@ -444,7 +444,10 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = ENGINE; 
 (() => {
 if (typeof document === 'undefined') return;
 const $ = s => document.querySelector(s);
-const E = (tag, cls, parent, css) => { const el = document.createElement(tag); if (cls) el.className = cls; if (parent) parent.appendChild(el); if (css) Object.assign(el.style, css); return el; };
+const E = (tag, cls, parent, css) => { const el = document.createElement(tag); if (cls) el.className = cls; if (parent) parent.appendChild(el);
+  if (css){ if ((css.left !== undefined || css.top !== undefined || css.right !== undefined || css.bottom !== undefined) && css.position === undefined) css.position = 'absolute';
+    Object.assign(el.style, css); }
+  return el; };
 const HUES = i => `hsl(${ENGINE.HUE(i)},85%,55%)`;
 const SIDE_NAMES = {1:'THE FOUNDRY',2:'THE TOMB',3:'THE HELM',4:'THE CORE',5:'THE TEMPLE',6:'THE KEEP'};
 
