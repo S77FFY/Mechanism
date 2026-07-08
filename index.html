@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>THE MECHANISM — v1.2.0</title>
+<title>THE MECHANISM — v1.3.0</title>
 <style>
 :root{
   --brass:#b08d3f; --brass-hi:#e8c877; --brass-lo:#6e5522;
@@ -134,11 +134,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
   background:radial-gradient(circle at 35% 30%, #ff9a8a, #a8281f 60%, #4d0e08);box-shadow:0 2px 6px rgba(0,0,0,.7);}
 .lever.pulled .stick{top:44px;}
 /* toggle switch */
-.tog{width:34px;height:58px;background:linear-gradient(#14161a,#22262c);border:1px solid #464c55;border-radius:6px;cursor:pointer;
-  box-shadow:inset 0 2px 8px rgba(0,0,0,.8);position:relative;}
-.tog .nub{position:absolute;left:50%;top:6px;width:16px;height:22px;transform:translateX(-50%);border-radius:4px;
-  background:linear-gradient(#e8e2cf,#9a927b);box-shadow:0 2px 4px rgba(0,0,0,.7);transition:top .12s ease;}
-.tog.on .nub{top:29px;background:linear-gradient(#a8ffc0,#3fae5a);}
+.tog{width:34px;height:58px;background:linear-gradient(#455063,#28303d);border:1px solid #6f8fa3;border-radius:6px;cursor:pointer;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.6), 0 0 0 1px rgba(120,235,255,.22), 0 2px 6px rgba(0,0,0,.5);position:relative;}
+.tog .nub{position:absolute;left:50%;top:6px;width:18px;height:22px;transform:translateX(-50%);border-radius:4px;
+  background:linear-gradient(#f2ecd8,#a89f86);box-shadow:0 2px 4px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.5);transition:top .12s ease;}
+.tog.on .nub{top:29px;background:linear-gradient(#a8ffc0,#3fae5a);box-shadow:0 0 10px rgba(90,255,150,.6), 0 2px 4px rgba(0,0,0,.7);}
 /* brass push button */
 .pushb{border-radius:50%;cursor:pointer;position:relative;
   background:radial-gradient(circle at 35% 28%, #f0dc9c, #b08d3f 55%, #4d3c17);
@@ -299,7 +299,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
   <button class="arrow" id="aL">◀<small></small></button>
   <button class="arrow" id="aR">▶<small></small></button>
   <button class="arrow" id="aZ">↻<small>90°</small></button>
-  <div id="ver" class="mono">v1.2.0</div>
+  <div id="ver" class="mono">v1.3.0</div>
   <div id="cpTag" class="disp"></div>
 </div>
 
@@ -318,7 +318,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <div id="winOv">
   <h1 class="disp">THE MECHANISM YIELDS</h1>
   <p id="winStats"></p>
-  <p style="color:#6e6a58;font-size:12px;">v1.2.0</p>
+  <p style="color:#6e6a58;font-size:12px;">v1.3.0</p>
 </div>
 
 <div id="portrait">
@@ -330,7 +330,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <script>
 /*ENGINE-START*/
 const ENGINE = (() => {
-  const VERSION = '1.2.0';
+  const VERSION = '1.3.0';
   const STORE_KEY = 'mechanism_v1';
   // Puzzle chain: strictly ordered, interleaved across sides.
   const PUZZLES = [
@@ -632,8 +632,8 @@ function commit(id, value){
     snd.good();
     flash(`hsla(${res.hue},85%,55%,.32)`);
     if (!state.started){ state.started = Date.now(); saveState(); }
-    if (res.status === 'solved') toast('A jewel seats itself. Something wakes on another side\u2026');
-    if (res.checkpoint){ setTimeout(()=>toast('A seal is pressed. The box will remember this much.'), 1700); snd.tick(); }
+    if (res.status === 'solved') toast('A jewel seats itself. Something wakes on another side\u2026', 5200);
+    if (res.checkpoint){ setTimeout(()=>toast('A seal is pressed. The box will remember this much.', 5200), 5500); snd.tick(); }
     refreshFaceStates();
     if (res.status === 'win'){ setTimeout(winSequence, 1200); }
     return true;
@@ -641,13 +641,13 @@ function commit(id, value){
   if (res.status === 'miss'){
     snd.bad(); flash('rgba(200,55,45,.4)');
     $('#stage').classList.remove('shudder'); void $('#stage').offsetWidth; $('#stage').classList.add('shudder');
-    toast(['The mechanism resists.','A light gutters out.','It does not want that.'][3 - state.lives - 1] || 'The mechanism resists.');
+    toast(['The mechanism resists.','A light gutters out.','It does not want that.'][3 - state.lives - 1] || 'The mechanism resists.', 4200);
     return false;
   }
   if (res.status === 'reset'){
     snd.doom(); flash('rgba(200,55,45,.55)');
     $('#stage').classList.remove('shudder'); void $('#stage').offsetWidth; $('#stage').classList.add('shudder');
-    toast(state.checkpoint > 0 ? 'Darkness. The box recalls only its sealed remembrance.' : 'Darkness. The box forgets everything.', 3600);
+    toast(state.checkpoint > 0 ? 'Darkness. The box recalls only its sealed remembrance.' : 'Darkness. The box forgets everything.', 6500);
     setTimeout(() => { resetControlPositions(); refreshFaceStates(); }, 500);
     return false;
   }
@@ -1214,11 +1214,14 @@ function mkGauge(face,x,y,s,markVal){ // markVal 0..10 -> needle angle -120..120
 
   /* ---- P5: binary console ---- */
   const p5 = E('div','ctl',f,{left:'40px',top:'168px',width:'460px',height:'130px'});
+  E('div','',p5,{position:'absolute',left:'0',top:'0',width:'402px',height:'92px',borderRadius:'8px',
+    background:'linear-gradient(rgba(120,235,255,.07), rgba(120,235,255,.03))',
+    border:'1px solid rgba(120,235,255,.22)',boxShadow:'inset 0 0 18px rgba(0,0,0,.5)'});
   const BITS = [128,64,32,16,8,4,2,1];
   const togs = [];
   BITS.forEach((b,i)=>{
     const t = mkToggle(p5, 10 + i*46, 10); togs.push(t);
-    E('div','mono',p5,{position:'absolute',left:(10+i*46)+'px',top:'72px',width:'34px',textAlign:'center',fontSize:'9px',color:'rgba(120,235,255,.4)'}).textContent=b;
+    E('div','mono',p5,{position:'absolute',left:(10+i*46)+'px',top:'72px',width:'34px',textAlign:'center',fontSize:'9px',color:'rgba(120,235,255,.75)'}).textContent=b;
   });
   const exec = E('div','ctl commit disp',p5,{position:'absolute',left:'10px',top:'94px',width:'118px',height:'30px',cursor:'pointer',
     background:'linear-gradient(#0f3d24,#07200f)',border:'1px solid #1e7a44',borderRadius:'4px',color:'#57ff9a',
