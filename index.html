@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>THE MECHANISM — v1.1.0</title>
+<title>THE MECHANISM — v1.2.0</title>
 <style>
 :root{
   --brass:#b08d3f; --brass-hi:#e8c877; --brass-lo:#6e5522;
@@ -88,22 +88,21 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 .hudBtn{background:linear-gradient(#2a2f36,#171a1f);border:1px solid #3a3f47;color:#aeb3ba;border-radius:6px;
   width:38px;height:34px;font-size:15px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);}
 .hudBtn:active{transform:translateY(1px);}
-#ver{position:fixed;left:16px;bottom:30px;font-size:11px;letter-spacing:.18em;color:#585d66;pointer-events:none;}
+#ver{position:fixed;right:18px;top:56px;font-size:11px;letter-spacing:.18em;color:#585d66;pointer-events:none;}
 #cpTag{position:fixed;left:16px;bottom:12px;font-size:11px;letter-spacing:.14em;color:#585d66;pointer-events:none;}
-#dpad{position:fixed;right:16px;bottom:16px;z-index:210;pointer-events:auto;
-  display:grid;grid-template-areas:'. u .' 'l c r' '. d .';grid-auto-columns:60px;grid-auto-rows:60px;gap:7px;}
-#dpad .dcenter{grid-area:c;border-radius:50%;margin:10px;
-  background:radial-gradient(circle at 35% 28%, #6b5a34, #33291a 65%, #16110a);
-  box-shadow:inset 0 2px 5px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.08);}
-.arrow{pointer-events:auto;width:60px;height:60px;border-radius:12px;cursor:pointer;
+.arrow{position:fixed;z-index:210;pointer-events:auto;width:58px;height:58px;border-radius:50%;cursor:pointer;
   background:radial-gradient(circle at 35% 28%, #caa551, #8a6d3b 55%, #4d3c17);
-  border:1px solid #2e2410;color:#241c08;font-size:22px;line-height:1;
+  border:1px solid #2e2410;color:#241c08;font-size:21px;line-height:1;
   box-shadow:0 5px 14px rgba(0,0,0,.65), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -3px 6px rgba(0,0,0,.35);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
   text-shadow:0 1px 0 rgba(255,255,255,.25);}
 .arrow small{font-size:10px;letter-spacing:.1em;color:#3d3012;font-weight:bold;}
-.arrow:active{transform:translateY(2px);box-shadow:0 2px 6px rgba(0,0,0,.65), inset 0 2px 0 rgba(255,255,255,.3);}
-#aU{grid-area:u;} #aD{grid-area:d;} #aL{grid-area:l;} #aR{grid-area:r;}
+.arrow:active{filter:brightness(1.3);}
+#aL{left:20px;top:50%;transform:translateY(-50%);}
+#aR{right:20px;top:50%;transform:translateY(-50%);}
+#aU{left:50%;top:62px;transform:translateX(-50%);}
+#aD{left:50%;bottom:18px;transform:translateX(-50%);}
+#aZ{right:20px;bottom:18px;}
 .arrow.hint{box-shadow:0 0 0 2px var(--hintHue,#fff), 0 0 20px 4px var(--hintHue,#fff), inset 0 2px 0 rgba(255,255,255,.35);
   animation:hintPulse 1.4s infinite ease-in-out;}
 @keyframes hintPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
@@ -295,14 +294,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
     <button class="hudBtn" id="sndBtn" title="Sound">♪</button>
     <button class="hudBtn" id="rstBtn" title="Hold to reset everything">⟲</button>
   </div>
-  <div id="dpad">
-    <button class="arrow" id="aU">▲<small></small></button>
-    <button class="arrow" id="aL">◀<small></small></button>
-    <div class="dcenter"></div>
-    <button class="arrow" id="aR">▶<small></small></button>
-    <button class="arrow" id="aD">▼<small></small></button>
-  </div>
-  <div id="ver" class="mono">v1.1.0</div>
+  <button class="arrow" id="aU">▲<small></small></button>
+  <button class="arrow" id="aD">▼<small></small></button>
+  <button class="arrow" id="aL">◀<small></small></button>
+  <button class="arrow" id="aR">▶<small></small></button>
+  <button class="arrow" id="aZ">↻<small>90°</small></button>
+  <div id="ver" class="mono">v1.2.0</div>
   <div id="cpTag" class="disp"></div>
 </div>
 
@@ -321,7 +318,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <div id="winOv">
   <h1 class="disp">THE MECHANISM YIELDS</h1>
   <p id="winStats"></p>
-  <p style="color:#6e6a58;font-size:12px;">v1.1.0</p>
+  <p style="color:#6e6a58;font-size:12px;">v1.2.0</p>
 </div>
 
 <div id="portrait">
@@ -333,7 +330,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <script>
 /*ENGINE-START*/
 const ENGINE = (() => {
-  const VERSION = '1.1.0';
+  const VERSION = '1.2.0';
   const STORE_KEY = 'mechanism_v1';
   // Puzzle chain: strictly ordered, interleaved across sides.
   const PUZZLES = [
@@ -412,6 +409,7 @@ const ENGINE = (() => {
   function mvec(m,v){ return [ m[0]*v[0]+m[1]*v[1]+m[2]*v[2], m[3]*v[0]+m[4]*v[1]+m[5]*v[2], m[6]*v[0]+m[7]*v[1]+m[8]*v[2] ]; }
   function rotX(s){ return [1,0,0, 0,0,-s, 0,s,0]; } // s=+1 -> rotateX(+90deg)
   function rotY(s){ return [0,0,s, 0,1,0, -s,0,0]; }
+  function rotZ(s){ return [0,-s,0, s,0,0, 0,0,1]; } // s=+1 -> rotateZ(+90deg), clockwise on screen
   // face normals in box space
   const NORMALS = { 1:[0,0,1], 6:[0,0,-1], 4:[1,0,0], 3:[-1,0,0], 2:[0,-1,0], 5:[0,1,0] };
   function frontFace(R){
@@ -429,6 +427,7 @@ const ENGINE = (() => {
     left:  { mat: rotY(+1), css: 'rotateY(90deg)'  },
     up:    { mat: rotX(-1), css: 'rotateX(-90deg)' },
     down:  { mat: rotX(+1), css: 'rotateX(90deg)'  },
+    cw:    { mat: rotZ(+1), css: 'rotateZ(90deg)'  }, // spin the facing side upright
   };
   function applyTurn(R, dir){ return mmul(TURNS[dir].mat, R); }
   function toMatrix3d(R){
@@ -436,7 +435,7 @@ const ENGINE = (() => {
   }
   return { VERSION, STORE_KEY, PUZZLES, CHECKPOINT_AT, HUE, VALIDATORS,
            initialState, currentPuzzle, attempt, serialize, deserialize,
-           M_ID, mmul, mvec, rotX, rotY, frontFace, applyTurn, toMatrix3d, TURNS };
+           M_ID, mmul, mvec, rotX, rotY, rotZ, frontFace, applyTurn, toMatrix3d, TURNS };
 })();
 /*ENGINE-END*/
 if (typeof module !== 'undefined' && module.exports) { module.exports = ENGINE; }
@@ -590,8 +589,9 @@ $('#aL').addEventListener('click', ()=>turn('left'));
 $('#aR').addEventListener('click', ()=>turn('right'));
 $('#aU').addEventListener('click', ()=>turn('up'));
 $('#aD').addEventListener('click', ()=>turn('down'));
+$('#aZ').addEventListener('click', ()=>turn('cw'));
 addEventListener('keydown', e => {
-  const k = {ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'}[e.key];
+  const k = {ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',r:'cw',R:'cw'}[e.key];
   if (k){ e.preventDefault(); turn(k); }
 });
 /* swipe on empty stage areas (not on controls) */
