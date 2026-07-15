@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>THE MECHANISM — v1.4.0</title>
+<title>THE MECHANISM — v1.5.0</title>
 <style>
 :root{
   --brass:#b08d3f; --brass-hi:#e8c877; --brass-lo:#6e5522;
@@ -81,9 +81,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 .led{width:14px;height:14px;border-radius:50%;border:2px solid #0a0b0d;box-shadow:inset 0 0 4px rgba(0,0,0,.8);}
 .led.g{background:radial-gradient(circle at 35% 30%, #b9ffcb, #3fae5a 55%, #17552a);box-shadow:0 0 10px rgba(63,174,90,.75), inset 0 0 3px rgba(0,0,0,.5);}
 .led.r{background:radial-gradient(circle at 35% 30%, #ffb1a8, #c8372d 55%, #5c130d);box-shadow:0 0 10px rgba(200,55,45,.8), inset 0 0 3px rgba(0,0,0,.5);}
-#sideName{position:fixed;top:14px;left:50%;transform:translateX(-50%);pointer-events:none;
+#sideName{position:fixed;top:14px;left:172px;pointer-events:none;
   background:linear-gradient(#20242a,#121418);border:1px solid #3a3f47;border-radius:6px;padding:8px 18px;
-  font-size:13px;letter-spacing:.18em;color:#d9bd72;text-shadow:0 1px 0 #000;box-shadow:0 4px 14px rgba(0,0,0,.6);}
+  font-size:13px;letter-spacing:.18em;color:#d9bd72;text-shadow:0 1px 0 #000;box-shadow:0 4px 14px rgba(0,0,0,.6);
+  max-width:36vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 #topRight{position:fixed;top:14px;right:16px;display:flex;gap:8px;pointer-events:auto;}
 .hudBtn{background:linear-gradient(#2a2f36,#171a1f);border:1px solid #3a3f47;color:#aeb3ba;border-radius:6px;
   width:38px;height:34px;font-size:15px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.5);}
@@ -98,10 +99,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
   text-shadow:0 1px 0 rgba(255,255,255,.25);}
 .arrow small{font-size:10px;letter-spacing:.1em;color:#3d3012;font-weight:bold;}
 .arrow:active{filter:brightness(1.3);}
-#aL{left:20px;top:50%;transform:translateY(-50%);}
-#aR{right:20px;top:50%;transform:translateY(-50%);}
-#aU{left:50%;top:62px;transform:translateX(-50%);}
-#aD{left:50%;bottom:18px;transform:translateX(-50%);}
+/* aU/aD/aL/aR are positioned dynamically by fit() to sit in the real gutters
+   around the box, so they can never obscure face content. */
 #aZ{right:20px;bottom:18px;}
 .arrow.hint{box-shadow:0 0 0 2px var(--hintHue,#fff), 0 0 20px 4px var(--hintHue,#fff), inset 0 2px 0 rgba(255,255,255,.35);
   animation:hintPulse 1.4s infinite ease-in-out;}
@@ -299,7 +298,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
   <button class="arrow" id="aL">◀<small></small></button>
   <button class="arrow" id="aR">▶<small></small></button>
   <button class="arrow" id="aZ">↻<small>90°</small></button>
-  <div id="ver" class="mono">v1.4.0</div>
+  <div id="ver" class="mono">v1.5.0</div>
   <div id="cpTag" class="disp"></div>
 </div>
 
@@ -318,7 +317,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <div id="winOv">
   <h1 class="disp">THE MECHANISM YIELDS</h1>
   <p id="winStats"></p>
-  <p style="color:#6e6a58;font-size:12px;">v1.4.0</p>
+  <p style="color:#6e6a58;font-size:12px;">v1.5.0</p>
 </div>
 
 <div id="portrait">
@@ -330,7 +329,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
 <script>
 /*ENGINE-START*/
 const ENGINE = (() => {
-  const VERSION = '1.4.0';
+  const VERSION = '1.5.0';
   const STORE_KEY = 'mechanism_v1';
   // Puzzle chain: strictly ordered, interleaved across sides.
   const PUZZLES = [
@@ -542,9 +541,30 @@ $('#rstBtn').addEventListener('pointerdown', () => {
 /* ---------- stage scaling ---------- */
 function fit(){
   const vw = innerWidth, vh = innerHeight;
-  const s = Math.min((vw - 190) / 960, (vh - 190) / 540, 1.6);
+  const clamp = (lo, v, hi) => Math.max(lo, Math.min(v, hi));
+  const reserveH = clamp(150, vw * 0.20, 220);   // side gutters
+  const reserveV = clamp(118, vh * 0.27, 220);   // top/bottom gutters
+  const s = Math.min((vw - reserveH) / 960, (vh - reserveV) / 540, 1.6);
   const st = $('#stage'); st.style.setProperty('--s', s);
   st.style.transform = `translate(-50%,-50%) scale(${s})`;
+  /* real box extents after scaling */
+  const bw = 960 * s, bh = 540 * s;
+  const gL = (vw - bw) / 2, gT = (vh - bh) / 2;
+  /* arrows live centred in their gutters, sized to fit them */
+  const place = (id, x, y, size) => {
+    const el = $('#'+id);
+    el.style.width = el.style.height = size + 'px';
+    el.style.fontSize = Math.round(size * .37) + 'px';
+    el.style.left = Math.round(x - size/2) + 'px';
+    el.style.top  = Math.round(y - size/2) + 'px';
+    el.style.right = el.style.bottom = 'auto';
+  };
+  const szH = clamp(38, gL * 0.66, 58);   // for ◀ ▶
+  const szV = clamp(38, gT * 0.66, 58);   // for ▲ ▼
+  place('aL', gL/2, vh/2, szH);
+  place('aR', vw - gL/2, vh/2, szH);
+  place('aU', vw/2, gT/2 + 10, szV);      // +10: breathing room under the HUD bar
+  place('aD', vw/2, vh - gT/2, szV);
 }
 addEventListener('resize', fit); fit();
 
